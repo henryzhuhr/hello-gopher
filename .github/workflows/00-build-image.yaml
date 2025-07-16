@@ -85,9 +85,9 @@ jobs:
           file: ./dockerfiles/Dockerfile
           push: ${{ startsWith(github.ref, 'refs/tags/') || github.event_name == 'release' }}
           tags: |
-            ghcr.io/${{ github.repository }}:latest
             ghcr.io/${{ github.repository }}:${{ steps.meta.outputs.tags }}
             ${{ steps.meta.outputs.tag != '' && format('ghcr.io/{0}:{1}', github.repository, steps.meta.outputs.tag) || '' }}
+          # 删除 ghcr.io/${{ github.repository }}:latest
           build-args: |
             GO_VERSION=${{ matrix.go_version }}
           platforms: |
