@@ -48,11 +48,11 @@ jobs:
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         run: |
-          GO_TAG=go${{ matrix.go_version }}
-          PLATFORM_TAG="${GO_TAG}-${{ matrix.platforms }}"
+          GO_VERSION=go${{ matrix.go_version }}
+          PLATFORM_TAG="${GO_VERSION}-${{ matrix.platforms }}"
           # 替换平台中的 `/` 为 `_`
           PLATFORM_TAG=$(echo "$PLATFORM_TAG" | tr '/' '_')
-          echo "tags=$GO_TAG" >> $GITHUB_OUTPUT
+          echo "go_version=$GO_VERSION" >> $GITHUB_OUTPUT
           echo "platform_tag=$PLATFORM_TAG" >> $GITHUB_OUTPUT
           if [[ "$GITHUB_REF" == refs/tags/* ]]; then
             TAG=$(echo $GITHUB_REF | sed 's/refs\/tags\///')
@@ -86,7 +86,7 @@ jobs:
           push: ${{ startsWith(github.ref, 'refs/tags/') || github.event_name == 'release' }}
           tags: |
             ghcr.io/${{ github.repository }}:${{ steps.meta.outputs.tags }}
-            ${{ steps.meta.outputs.tag != '' && format('ghcr.io/{0}:{1}', github.repository, steps.meta.outputs.tag) || '' }}
+            ${{ steps.meta.outputs.tag != '' && format('ghcr.io/{0}:{1}{2}', github.repository, steps.meta.outputs.go_version, steps.meta.outputs.tag) || '' }}
           # 删除 ghcr.io/${{ github.repository }}:latest
           build-args: |
             GO_VERSION=${{ matrix.go_version }}
